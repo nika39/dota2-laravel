@@ -5,9 +5,7 @@ use App\Http\Controllers\HeroController;
 use App\Http\Controllers\HeroPositionController;
 use App\Http\Controllers\StrongOpponentController;
 use App\Http\Controllers\WeakOpponentController;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
