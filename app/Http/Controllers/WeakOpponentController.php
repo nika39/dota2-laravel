@@ -20,10 +20,16 @@ class WeakOpponentController extends Controller
             'opponent' => 'required|exists:heroes,name',
         ]);
 
-        $hero = Hero::select('id')->where('name', $validated['hero'])->first();
-        $opponent = Hero::select('id')->where('name', $validated['opponent'])->first();
+        $hero = Hero::select('id')
+            ->where('name', $validated['hero'])
+            ->first();
+        $opponent = Hero::select('id')
+            ->where('name', $validated['opponent'])
+            ->first();
 
-        return WeakOpponent::where('hero_id', $hero->id)->where('weak_opponent_id', $opponent->id)->firstOrFail();
+        return WeakOpponent::where('hero_id', $hero->id)
+            ->where('weak_opponent_id', $opponent->id)
+            ->firstOrFail();
     }
 
     /**
@@ -39,13 +45,24 @@ class WeakOpponentController extends Controller
             'opponent' => 'required|exists:heroes,name',
         ]);
 
-        $hero = Hero::select('id')->where('name', $validated['hero'])->first();
-        $opponent = Hero::select('id')->where('name', $validated['opponent'])->first();
+        $hero = Hero::select('id')
+            ->where('name', $validated['hero'])
+            ->first();
+        $opponent = Hero::select('id')
+            ->where('name', $validated['opponent'])
+            ->first();
 
-        if (WeakOpponent::where('hero_id', $hero->id)->where('weak_opponent_id', $opponent->id)->exists()) {
-            return response()->json([
-                'message' => 'Similar WeakOpponent already exists!'
-            ], 422);
+        if (
+            WeakOpponent::where('hero_id', $hero->id)
+                ->where('weak_opponent_id', $opponent->id)
+                ->exists()
+        ) {
+            return response()->json(
+                [
+                    'message' => 'Similar WeakOpponent already exists!',
+                ],
+                422
+            );
         }
 
         return WeakOpponent::create([

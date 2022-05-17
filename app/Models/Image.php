@@ -13,16 +13,10 @@ class Image extends Model
 
     protected $fillable = ['hero_id', 'path'];
 
-
-    protected $hidden = [
-        'hero_id',
-    ];
-
+    protected $hidden = ['hero_id'];
 
     protected function path(): Attribute
     {
-        return Attribute::make(
-            get: fn ($value) => Storage::url($value),
-        );
+        return Attribute::make(get: fn($value) => Storage::url($value));
     }
 }

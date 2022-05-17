@@ -24,7 +24,7 @@ class HeroPositionController extends Controller
         return view('positions', [
             'heroes' => $heroes,
             'ranks' => $ranks,
-            'positions' => $positions
+            'positions' => $positions,
         ]);
     }
 
@@ -47,16 +47,14 @@ class HeroPositionController extends Controller
         foreach ($validated['ranks'] as $rank_id) {
             foreach ($validated['positions'] as $position) {
                 $positions[] = [
-                    'hero_id' => (int)$validated['hero'],
-                    'rank_id' => (int)$rank_id,
-                    'position_id' => (int)$position
+                    'hero_id' => (int) $validated['hero'],
+                    'rank_id' => (int) $rank_id,
+                    'position_id' => (int) $position,
                 ];
             }
         }
 
         // return $positions;
-
-
 
         HeroPosition::insert($positions);
 
@@ -65,8 +63,8 @@ class HeroPositionController extends Controller
             'values' => [
                 'positions' => $validated['positions'],
                 'ranks' => $validated['ranks'],
-                'hero_id' => (int)$validated['hero']
-            ]
+                'hero_id' => (int) $validated['hero'],
+            ],
         ]);
     }
 

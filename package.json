@@ -1,0 +1,13 @@
+{
+    "name": "dota2-laravel",
+    "version": "1.0.0",
+    "private": true,
+    "main": "index.js",
+    "repository": "https://github.com/nikshama/dota2-laravel.git",
+    "author": "nikshama <nika.shamanauri@gmail.com>",
+    "license": "MIT",
+    "devDependencies": {
+        "@prettier/plugin-php": "^0.18.4",
+        "prettier": "^2.6.2"
+    }
+}

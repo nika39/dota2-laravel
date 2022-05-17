@@ -19,34 +19,53 @@ class HeroController extends Controller
      */
     public function index(Request $request)
     {
-        $heroes = Hero::select('id', 'name', 'link', 'category_id')
-            ->with(['image:id,hero_id,path', 'category:id,name', 'strongOpponents', 'weakOpponents']);
+        $heroes = Hero::select('id', 'name', 'link', 'category_id')->with([
+            'image:id,hero_id,path',
+            'category:id,name',
+            'strongOpponents',
+            'weakOpponents'
+        ]);
 
         if ($request->has('rank')) {
             $rank_id = Rank::where('title', $request->input('rank'))->firstOrFail()->id;
 
-            $heroes->with(['positions' => function ($query) use ($rank_id) {
-                $query->with(['position'])->where('rank_id', $rank_id);
-            }]);
+            $heroes->with([
+                'positions' => function ($query) use ($rank_id) {
+                    $query->with(['position'])->where('rank_id', $rank_id);
+                }
+            ]);
         } else {
-            $heroes->with(['positions' => function ($query) {
-                $query->with(['position', 'rank']);
-            }]);
+            $heroes->with([
+                'positions' => function ($query) {
+                    $query->with(['position', 'rank']);
+                }
+            ]);
         }
 
         if ($request->has('cat')) {
             $validated = $request->validate([
-                'cat' => 'integer|in:1,2,3',
+                'cat' => 'integer|in:1,2,3'
             ]);
 
             $heroes->where('category_id', $validated['cat']);
         }
 
-        $data = collect($heroes->orderBy('name')->get()->toArray())->map(function ($hero) use ($request) {
-            $hero['strong_opponents'] = collect($hero['strong_opponents'])->map(fn ($opponent) => $opponent['strong_opponent_id']);
-            $hero['weak_opponents'] = collect($hero['weak_opponents'])->map(fn ($opponent) => $opponent['weak_opponent_id']);
+        $data = collect(
+            $heroes
+                ->orderBy('name')
+                ->get()
+                ->toArray()
+        )->map(function ($hero) use ($request) {
+            $hero['strong_opponents'] = collect($hero['strong_opponents'])->map(
+                fn($opponent) => $opponent['strong_opponent_id']
+            );
+            $hero['weak_opponents'] = collect($hero['weak_opponents'])->map(
+                fn($opponent) => $opponent['weak_opponent_id']
+            );
             if ($request->has('rank')) {
-                $hero['positions'] = collect($hero['positions'])->map(fn ($position) => $position['position']['position']);
+                $hero['positions'] = collect($hero['positions'])->map(
+                    fn($position) => $position['position']['position']
+                );
             }
 
             return $hero;
@@ -62,7 +81,8 @@ class HeroController extends Controller
 
             $data = collect($data)->filter(function ($hero) use ($validated) {
                 return collect($hero['position'])->some(function ($item) use ($validated) {
-                    return $item['rank']['title'] === $validated['rank'] && $item['position']['position'] === (int)$validated['position'];
+                    return $item['rank']['title'] === $validated['rank'] &&
+                        $item['position']['position'] === (int) $validated['position'];
                 });
             });
         }
@@ -82,7 +102,6 @@ class HeroController extends Controller
 
         // return $heroes;
 
-
         return $data;
         // return response()->json($heroes->orderBy('name')->get(), 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
@@ -99,7 +118,7 @@ class HeroController extends Controller
             'name' => 'required|unique:heroes,name|max:255',
             'link' => 'required|url',
             'image_url' => 'required|url',
-            'cat' => 'integer|in:1,2,3',
+            'cat' => 'integer|in:1,2,3'
         ]);
 
         $hero = Hero::create([
@@ -111,10 +130,9 @@ class HeroController extends Controller
         // $parsed_url = parse_url($hero->image_url);
         // $path = str_replace(substr($hero->image_url, strpos($hero->image_url, '.png') + 4), "", $parsed_url['path']);
         // $image_url = $parsed_url['scheme'] . "://" . $parsed_url['host'] . $path;
-        $image_name = $hero->id . "_" . Str::slug($hero->name) . ".png";
+        $image_name = $hero->id . '_' . Str::slug($hero->name) . '.png';
         Storage::put('public/images/' . $image_name, file_get_contents($validated['image_url']));
         $hero->image()->create(['path' => 'public/images/' . $image_name]);
-
 
         return $hero;
     }
@@ -128,26 +146,33 @@ class HeroController extends Controller
     public function show(Request $request, $id)
     {
         $hero = Hero::select('id', 'name', 'link', 'category_id')
-            ->with(['image:id,hero_id,path', 'category:id,name', 'strongOpponents', 'weakOpponents'])->where('id', $id);
+            ->with(['image:id,hero_id,path', 'category:id,name', 'strongOpponents', 'weakOpponents'])
+            ->where('id', $id);
 
         if ($request->has('rank')) {
             $rank_id = Rank::where('title', $request->input('rank'))->firstOrFail()->id;
 
-            $hero->with(['positions' => function ($query) use ($rank_id) {
-                $query->with(['position'])->where('rank_id', $rank_id);
-            }]);
+            $hero->with([
+                'positions' => function ($query) use ($rank_id) {
+                    $query->with(['position'])->where('rank_id', $rank_id);
+                }
+            ]);
         } else {
-            $hero->with(['positions' => function ($query) {
-                $query->with(['position', 'rank']);
-            }]);
+            $hero->with([
+                'positions' => function ($query) {
+                    $query->with(['position', 'rank']);
+                }
+            ]);
         }
 
         $hero = $hero->firstOrFail()->toArray();
 
-        $hero['strong_opponents'] = collect($hero['strong_opponents'])->map(fn ($opponent) => $opponent['strong_opponent_id']);
-        $hero['weak_opponents'] = collect($hero['weak_opponents'])->map(fn ($opponent) => $opponent['weak_opponent_id']);
+        $hero['strong_opponents'] = collect($hero['strong_opponents'])->map(
+            fn($opponent) => $opponent['strong_opponent_id']
+        );
+        $hero['weak_opponents'] = collect($hero['weak_opponents'])->map(fn($opponent) => $opponent['weak_opponent_id']);
         if ($request->has('rank')) {
-            $hero['positions'] = collect($hero['positions'])->map(fn ($position) => $position['position']['position']);
+            $hero['positions'] = collect($hero['positions'])->map(fn($position) => $position['position']['position']);
         }
 
         return $hero;

@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Http\Controllers\HeroController;
 use App\Http\Controllers\HeroPositionController;
 use App\Http\Controllers\StrongOpponentController;
@@ -23,7 +22,6 @@ Route::apiResource('heroes', HeroController::class);
 Route::apiResource('strong-opponent', StrongOpponentController::class);
 Route::apiResource('weak-opponent', WeakOpponentController::class);
 Route::apiResource('hero-positions', HeroPositionController::class);
-
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
