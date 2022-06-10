@@ -22,10 +22,10 @@ class WeakOpponentController extends Controller
 
         $hero = Hero::select('id')
             ->where('name', $validated['hero'])
-            ->first();
+            ->firstOrFail();
         $opponent = Hero::select('id')
             ->where('name', $validated['opponent'])
-            ->first();
+            ->firstOrFail();
 
         return WeakOpponent::where('hero_id', $hero->id)
             ->where('weak_opponent_id', $opponent->id)
@@ -45,12 +45,21 @@ class WeakOpponentController extends Controller
             'opponent' => 'required|exists:heroes,name',
         ]);
 
+        if ($validated['hero'] == $validated['opponent']) {
+            return response()->json(
+                [
+                    'message' => 'The names of the heroes are the same!',
+                ],
+                422
+            );
+        }
+
         $hero = Hero::select('id')
             ->where('name', $validated['hero'])
-            ->first();
+            ->firstOrFail();
         $opponent = Hero::select('id')
             ->where('name', $validated['opponent'])
-            ->first();
+            ->firstOrFail();
 
         if (
             WeakOpponent::where('hero_id', $hero->id)

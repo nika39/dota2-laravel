@@ -45,12 +45,21 @@ class StrongOpponentController extends Controller
             'opponent' => 'required|exists:heroes,name',
         ]);
 
+        if ($validated['hero'] == $validated['opponent']) {
+            return response()->json(
+                [
+                    'message' => 'The names of the heroes are the same!',
+                ],
+                422
+            );
+        }
+
         $hero = Hero::select('id')
             ->where('name', $validated['hero'])
-            ->first();
+            ->firstOrFail();
         $opponent = Hero::select('id')
             ->where('name', $validated['opponent'])
-            ->first();
+            ->firstOrFail();
 
         if (
             StrongOpponent::where('hero_id', $hero->id)
